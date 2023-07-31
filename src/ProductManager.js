@@ -1,6 +1,6 @@
 import fs from 'fs'
 
-export default class ProductManager {
+class ProductManager {
     constructor(path) {
        this.path = path
     }
@@ -19,7 +19,6 @@ export default class ProductManager {
         }
     }
 
-
     async addProduct (obj) {
         try {
             const productsPrev = await this.getProducts()
@@ -30,7 +29,6 @@ export default class ProductManager {
             } else {
                 id = productsPrev[productsPrev.length - 1].id + 1
             }
-
             const codeExist = productsPrev.find(p => p.code === obj.code)
 
             // Verificacion de la existencia de todas las keys y repetición del value del code.
@@ -40,9 +38,10 @@ export default class ProductManager {
             if (codeExist) {
                 throw new Error(`The code: ${obj.code} already exists. Please enter another one!`)
             }
-
-            productsPrev.push({...obj, id})
+            const newProduct = {...obj, id}
+            productsPrev.push(newProduct)
             await fs.promises.writeFile(this.path, JSON.stringify(productsPrev))
+            return newProduct
         } catch(error) {
             console.log(error)
             return error
@@ -92,96 +91,9 @@ export default class ProductManager {
     }
 }
 
-const iphone12 = {
-    title:'iPhone 12',
-    description:'This is the iPhone 12',
-    price: 749,
-    thumbnail:'Sin imagen',
-    code:'iphone12',
-    stock:25    
-}
+const productManager = new ProductManager('products.json')
+export default productManager
 
-const iphoneSE = {
-    title:'iPhone SE',
-    description:'This is the iPhone SE',
-    price:579,
-    thumbnail:'Sin imagen',
-    code:'iphonese',
-    stock:30
-}
-
-const iphone13Mini = {
-    title:'iPhone 13 mini',
-    description:'This is the iPhone 13 mini',
-    price:599,
-    thumbnail:'Sin imagen',
-    code:'iphone13m',
-    stock:45
-}
-
-
-const iphone13 = {
-    title:'iPhone 13',
-    description:'This is the iPhone 13',
-    price:699,
-    thumbnail:'Sin imagen',
-    code:'iphone13',
-    stock:30
-}
-
-const iphone14 = {
-    title:'iPhone 14',
-    description:'This is the iPhone 14',
-    price:799,
-    thumbnail:'Sin imagen',
-    code:'iphone14',
-    stock:34
-}
-
-const iphone14Plus = {
-    title:'iPhone 14 Plus',
-    description:'This is the iPhone 14 Plus',
-    price:899,
-    thumbnail:'Sin imagen',
-    code:'iphone14pl',
-    stock:39
-}
-
-const iphone14Pro = {
-    title:'iPhone 14 Pro',
-    description:'This is the iPhone 14 Pro',
-    price:999,
-    thumbnail:'Sin imagen',
-    code:'iphone14pr',
-    stock:67
-}
-
-const iphone14ProMax = {
-    title:'iPhone 14 Pro Max',
-    description:'This is the iPhone 14 Pro Max',
-    price:1099,
-    thumbnail:'Sin imagen',
-    code:'iphone14prmx',
-    stock:60
-}
-
-const ipadMini = {
-    title:'iPad mini',
-    description:'This is the iPad mini',
-    price:499,
-    thumbnail:'Sin imagen',
-    code:'ipadmini',
-    stock:62
-}
-
-const ipad = {
-    title:'iPad',
-    description:'This is the iPad',
-    price:449,
-    thumbnail:'Sin imagen',
-    code:'ipad',
-    stock:36
-}
 
 //async function test() {
     //const productManager = new ProductManager('products.json')
