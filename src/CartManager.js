@@ -55,14 +55,25 @@ class CartManager {
      }
     
      async addProductToCart(cid, pid) {
-        const cartById = await this.getCartsById(cid)
-        const productById = await productManager.getProductById(pid)
-        const newProduct = {
-            product: productById.id,
-            quantity: 1
-        }
-        if (cartById.length === 0) {
-
+        try {
+            const cartsPrev = await this.getCarts()
+            const cartById = await this.getCartsById(cid)
+            const productById = await productManager.getProductById(pid)
+            const newProductToCart = {
+                product: productById.id,
+                quantity: 1
+            }
+            const productOnCart = cartById.find(p => p.id === pid)
+            if (productOnCart){
+            //incremento en una unidad en que caso de que haya un producto con ese ID
+                productOnCart.quantity++  
+                return await fs.promises.writeFile(this.path, JSON.stringify(cartsPrev))
+            }
+            cartById.push(newProductToCart)
+            await fs.promises.writeFile(this.path, JSON.stringify(cartsPrev))
+        } catch (error) {
+            console.log(error)
+            return error
         }
      }
 }
