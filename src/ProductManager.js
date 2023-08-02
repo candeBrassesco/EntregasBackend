@@ -32,7 +32,7 @@ class ProductManager {
             const codeExist = productsPrev.find(p => p.code === obj.code)
 
             // Verificacion de la existencia de todas las keys y repetición del value del code.
-            if (!obj.title || !obj.description || !obj.price || !obj.thumbnail || !obj.code || !obj.stock) {
+            if (!obj.title || !obj.description || !obj.price || !obj.code || !obj.stock) {
                 throw new Error('Please enter all the parameters to add a new product: title, description, price, thumbnail, code and stock');
             }
             if (codeExist) {
