@@ -39,10 +39,10 @@ class CartManager {
         try {
             const cartsPrev = await this.getCarts()
             let id 
-            if (!productsPrev.length){
+            if (!cartsPrev.length){
                 id = 1
             } else {
-                id = productsPrev[productsPrev.length - 1].id + 1
+                id = cartsPrev[cartsPrev.length - 1].id + 1
             }
             const newCart = {...obj, id}
             cartsPrev.push(newCart)
