@@ -5,6 +5,7 @@ import productManager from './ProductManager.js'
 class CartManager {
      constructor (path) {
         this.path = path
+        this.carts = []
      }
 
      async getCarts() {
@@ -24,18 +25,18 @@ class CartManager {
      async getCartsById(id) {
         try {
             const cartsPrev = await this.getCarts()
-            const cart = cartsPrev.find(p => p.id === id)
-            if (!cart) {
+            const cartById = cartsPrev.find(p => p.id === id)
+            if (!cartById) {
                 return 'Cart Id not found'
             }
-            return cart
+            return cartById.products
         } catch(error) {
             console.log(error)
             return error
         }
      }
 
-     async addCart(obj) {
+     async addCart() {
         try {
             const cartsPrev = await this.getCarts()
             let id 
@@ -44,7 +45,10 @@ class CartManager {
             } else {
                 id = cartsPrev[cartsPrev.length - 1].id + 1
             }
-            const newCart = {...obj, id}
+            let newCart = {
+                id: id,
+                products: []
+            }
             cartsPrev.push(newCart)
             await fs.promises.writeFile(this.path, JSON.stringify(cartsPrev))
             return newCart
@@ -57,20 +61,24 @@ class CartManager {
      async addProductToCart(cid, pid) {
         try {
             const cartsPrev = await this.getCarts()
-            const cartById = await this.getCartsById(cid)
             const productById = await productManager.getProductById(pid)
             const newProductToCart = {
                 product: productById.id,
                 quantity: 1
             }
-            const productOnCart = cartById.find(p => p.id === pid)
-            if (productOnCart){
-            //incremento en una unidad en que caso de que haya un producto con ese ID
-                productOnCart.quantity++  
-                return await fs.promises.writeFile(this.path, JSON.stringify(cartsPrev))
-            }
-            cartById.push(newProductToCart)
-            await fs.promises.writeFile(this.path, JSON.stringify(cartsPrev))
+            const carts = cartsPrev.map(cart => {
+                if (cart.id === cid) {
+                    const productInCart = cart.products.find(product => product.product === pid)
+                    if (productInCart) {
+                        productInCart.quantity++
+                    } else {
+                        cart.products.push(newProductToCart)
+                    }
+                }
+                return cart
+            })
+            await fs.promises.writeFile(this.path, JSON.stringify(carts))
+            return newProductToCart
         } catch (error) {
             console.log(error)
             return error
@@ -78,5 +86,5 @@ class CartManager {
      }
 }
 
-const cartManager = new CartManager('cart.json')
+const cartManager = new CartManager('carts.json')
 export default cartManager
