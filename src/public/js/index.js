@@ -31,10 +31,10 @@ socketClient.on("products", (addProductsToList) => {
     })
 })
 
-socketClient.on("addProductToHTML",(addProductsList)=>{
-    let addProductToHTML = ""
-    addLiProducts.forEach(p=>{
-        addProductToHTML +=  `<li id="title">${p.title}</li>`
-        div.innerHTML = addProductToHTML
+socketClient.on("addProductToHTML",(addProductsToList)=>{
+    let addProductToHTML = "";
+    addProductsToList.forEach(p => {
+        addProductToHTML += `<li id="title">${p.title}</li>`;
+        div.innerHTML = addProductToHTML;
     })
 })

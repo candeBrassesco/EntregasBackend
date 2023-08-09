@@ -14,7 +14,11 @@ app.use (express.json())
 app.use(express.urlencoded({extended:true}))
 
 //__dirname
-app.use(express.static(__dirname+'/public'))
+app.use(express.static(__dirname + '/public', {
+    mimeTypes: {
+      '/js/index.js': 'application/javascript'
+    }
+  }));
 
 //handlebars setting
 app.engine('handlebars', handlebars.engine());
@@ -43,15 +47,16 @@ const socketServer = new Server(httpServer)
 
 socketServer.on('connection', (socket) => {
     console.log(`User connected: ${socket.id}`)
-    socket.on("products", addProductsToList)
+    socket.emit("products", addProductsToList)
     socket.on("object", (obj) => {
         productManager.addProduct(obj)
-        let addList = {title:obj.title}
+        let addList = {title: obj.title}
         addProductsToList.push(addList)
         socketServer.emit("addProductToHTML", addProductsToList)
-    })
+    });
     socket.on("disconnect", () => {
         console.log("Client disconnected")
     })
-
 })
+
+
