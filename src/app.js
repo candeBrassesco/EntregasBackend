@@ -2,6 +2,7 @@ import express from 'express'
 import productsRouter from './routes/products.router.js'
 import cartRouter from './routes/cart.router.js'
 import viewsRouter from './routes/views.router.js'
+import realTimeProductsRouter from './routes/realTimeProducts.js'
 import handlebars from 'express-handlebars'
 import {__dirname} from './utils.js'
 import productManager from './ProductManager.js'
@@ -31,6 +32,7 @@ app.use("/api/cart", cartRouter)
 
 // handlebars routes
 app.use("/api/views", viewsRouter)
+app.use("/api/realtimeproducts", realTimeProductsRouter)
 
 const PORT = 8080
 
@@ -54,9 +56,19 @@ socketServer.on('connection', (socket) => {
         addProductsToList.push(addList)
         socketServer.emit("addProductToHTML", addProductsToList)
     });
+    socketServer.on("id", async (id) => {
+        let product = await productManager.getProductById(id)
+        console.log(product)
+        if (product) {
+            let title = product.title
+            let newList = addProductsToList.filter(p => p.title !== title)
+            socketServer.emit("deleteProductOfHTML", newList) 
+        } 
+        productManager.deleteProduct(id)
+    })
     socket.on("disconnect", () => {
         console.log("Client disconnected")
-    })
+    })  
 })
 
 

@@ -8,8 +8,4 @@ router.get('/', async (req,res) => {
     res.render("home", {products})
 })
 
-router.get('/realtimeproducts', async (req,res) => {
-    res.render("realTimeProducts")
-})
-
 export default router
