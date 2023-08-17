@@ -41,7 +41,6 @@ socketClient.on("addProductToHTML",(addProductsToList)=>{
     })
 })
 
-
 //Delete products
 formDelete.onsubmit = (e) => {
     e.preventDefault()

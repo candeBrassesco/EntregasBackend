@@ -1,8 +1,9 @@
 import express from 'express'
 import productsRouter from './routes/products.router.js'
 import cartRouter from './routes/cart.router.js'
+import chatRouter from './routes/chat.router.js'
 import viewsRouter from './routes/views.router.js'
-import realTimeProductsRouter from './routes/realTimeProducts.js'
+import realTimeProductsRouter from './routes/realTimeProducts.router.js'
 import handlebars from 'express-handlebars'
 import {__dirname} from './utils.js'
 import productManager from './ProductManager.js'
@@ -33,6 +34,7 @@ app.use("/api/cart", cartRouter)
 // handlebars routes
 app.use("/api/views", viewsRouter)
 app.use("/api/realtimeproducts", realTimeProductsRouter)
+app.use("/api/chat", chatRouter)
 
 const PORT = 8080
 
@@ -45,6 +47,8 @@ const products = await productManager.getProducts()
 
 let addProductsToList = [...products]
 
+const messages = []
+
 const socketServer = new Server(httpServer)
 
 socketServer.on('connection', (socket) => {
@@ -56,7 +60,7 @@ socketServer.on('connection', (socket) => {
         addProductsToList.push(addList)
         socketServer.emit("addProductToHTML", addProductsToList)
     });
-    socketServer.on("id", async (id) => {
+    socket.on("id", async (id) => {
         let product = await productManager.getProductById(id)
         console.log(product)
         if (product) {
@@ -65,6 +69,10 @@ socketServer.on('connection', (socket) => {
             socketServer.emit("deleteProductOfHTML", newList) 
         } 
         productManager.deleteProduct(id)
+    })
+    socket.on("message", infoMessage => {
+        messages.push(infoMessage)
+        socketServer.emit
     })
     socket.on("disconnect", () => {
         console.log("Client disconnected")
