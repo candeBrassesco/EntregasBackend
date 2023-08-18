@@ -53,6 +53,7 @@ const socketServer = new Server(httpServer)
 
 socketServer.on('connection', (socket) => {
     console.log(`User connected: ${socket.id}`)
+    //realtimeproducts
     socket.emit("products", addProductsToList)
     socket.on("object", (obj) => {
         productManager.addProduct(obj)
@@ -70,9 +71,14 @@ socketServer.on('connection', (socket) => {
         } 
         productManager.deleteProduct(id)
     })
+    //chat 
     socket.on("message", infoMessage => {
         messages.push(infoMessage)
-        socketServer.emit
+        socketServer.emit("chat", messages)
+    })
+    //emitir notificación de que se conectó un usuario a los demás
+    socket.on("newUser", user=> {
+        socket.broadcast.emit('broadcast', user)
     })
     socket.on("disconnect", () => {
         console.log("Client disconnected")

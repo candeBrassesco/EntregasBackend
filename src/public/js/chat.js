@@ -19,6 +19,7 @@ Swal.fire ({
 }).then(name => {
     user = name.value
     nameh3.innerText = `Hi ${user}`
+    socketClient.emit('newUser', user)
 })
 
 formChat.onsubmit = (e) => {
@@ -29,3 +30,20 @@ formChat.onsubmit = (e) => {
     }
     socketClient.submit("message", infoMessage)
 }
+
+socketClient.on("chat", messages =>{
+    const chat = messages.map(objMessage => {
+        return `<p>${objMessage.name}: ${objMessage.message}</p>`
+    }).join(' ')
+    divChat.innerHTML = chat
+})
+
+socketClient.on("brodcast", user => {
+    Toastify({
+        text: `${user} is connected`,
+        duration: 5000,
+        style: {
+            background: "linear-gradient(to right, #00b09b, #96c93d)",
+        }
+    }).showToast()
+})
