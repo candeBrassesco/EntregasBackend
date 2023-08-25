@@ -51,7 +51,7 @@ class ProductManager {
     async getProductById (id) {
         try {
             const productsPrev = await this.getProducts()
-            const product = productsPrev.find(p => p.id === id)
+            const product = productsPrev.find(p => p.id == id)
             if (!product) {
                return 'ID not found'
             } 
@@ -64,7 +64,7 @@ class ProductManager {
     async updateProduct (id, obj) {
         try {
             const productsPrev = await this.getProducts()
-            const productIndex = productsPrev.findIndex(p => p.id === id)
+            const productIndex = productsPrev.findIndex(p => p.id == id)
             if (productIndex === -1) {
                 return 'No product found with the ID setted'
             }
@@ -80,7 +80,7 @@ class ProductManager {
     async deleteProduct (id) {
         try {
             const productsPrev = await this.getProducts()
-            const newProductsArray = productsPrev.filter(p => p.id !== id)
+            const newProductsArray = productsPrev.filter(p => p.id != id)
             await fs.promises.writeFile(
                 this.path,
                 JSON.stringify(newProductsArray)

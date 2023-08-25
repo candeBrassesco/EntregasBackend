@@ -6,8 +6,9 @@ import viewsRouter from './routes/views.router.js'
 import realTimeProductsRouter from './routes/realTimeProducts.router.js'
 import handlebars from 'express-handlebars'
 import {__dirname} from './utils.js'
-import productManager from './ProductManager.js'
+import productManager from './dao/fileManagers/ProductManager.js'
 import {Server} from "socket.io"
+import './db/dbConfig.js'
 
 
 const app = express()
