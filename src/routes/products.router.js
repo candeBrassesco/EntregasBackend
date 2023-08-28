@@ -26,8 +26,8 @@ router.get("/", async (req, res) => {
 router.get("/:pid", async (req, res)=>{
     const {pid} = req.params
     try {
-        const productById = await productManager.getProductById(+pid)
-        res.status(200).json({message:'Product',productById})
+        const productById = await productManager.getProductById(pid)
+        res.status(200).json({message:'Product', productById})
     } catch (error){
         res.status(500).json({error})
     }
@@ -45,18 +45,20 @@ router.post('/', async(req,res) => {
 router.delete('/:pid', async(req,res) => {
     const {pid} = req.params
     try {
-        const response = await productManager.deleteProduct(+pid)
-        res.status(200).json({message:'Product deleted'})
+        const response = await productManager.deleteProduct(pid)
+        res.status(200).json({message:'Product deleted', product: response})
     } catch (error) {
         res.status(500).json({error})
     }
 })
 
 router.put('/:pid', async (req,res) => {
+    const productUpdate = req.body
     const {pid} = req.params
+    productUpdate.id = pid
     try {
-        const productUpdated = await productManager.updateProduct(+pid, req.body)
-        req.status(200).json({message:'Product updated'})
+        const productUpdated = await productManager.updateProduct(productUpdate)
+        req.status(200).json({message:'Product updated', product: productUpdated})
     } catch (error){
         res.status(500).json({error})
     }

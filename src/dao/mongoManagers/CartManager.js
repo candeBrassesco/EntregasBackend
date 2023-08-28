@@ -1,4 +1,4 @@
-import { cartsModel } from "../../db/models/carts.model";
+import { cartsModel } from "../../db/models/carts.model.js";
 import productManager from "./ProductManager.js";
 
 
@@ -49,3 +49,6 @@ class CartManager {
     }
 
 }
+
+const cartManager = new CartManager()
+export default cartManager
