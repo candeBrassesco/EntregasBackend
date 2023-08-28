@@ -33,17 +33,16 @@ class CartManager {
 
     async addProductToCart(cid, pid) {
         try { 
-            const cartById = await cartsModel.findById(cid)
-            const prodById = await productManager.getProductById(pid)
-            const newProductToCart = {
-                product: prodById.id,
-                quantity: 1
-            }
-            const newCart = cartById
-            const prodOnCart = cartById.products.find(p => p.id == pid)
-            if (prodOnCart) {
-                newProductToCart.quantity++
-            }
+            const cart = await cartsModel.findOneAndUpdate ({_id: cid}, {
+                $push: {
+                    products: {
+                        _id: pid, 
+                        // se incrementa en una unidad si el producto existe
+                        quantity: { $inc: { $cond: [ { $eq: [ { _id: pid }, { quantity: { $exists: true } } ] }, 1, 0 ] }}
+                    }
+                }, 
+            }, {upsert: true});
+            return cart
         } catch (error) {
             return error
         }
