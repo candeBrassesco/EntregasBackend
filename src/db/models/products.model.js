@@ -20,13 +20,9 @@ const productsSchema = new mongoose.Schema({
         required: true
       },
       code:{
-        type: Number,
+        type: String,
         required: true,
         unique: true
-      },
-      category:{
-        type: String,
-        required: true
       },
       status:{
         
@@ -34,6 +30,6 @@ const productsSchema = new mongoose.Schema({
       thumbnails:{
         type: String
       }
-})
+});
 
 export const productsModel = mongoose.model('Products', productsSchema)
