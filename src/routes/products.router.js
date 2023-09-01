@@ -6,34 +6,34 @@ const router = Router()
 
 router.get("/", async (req, res) => {
     try {
-        const {limit} = req.query
-        if(limit){
-            const products = await productManager.getProducts()
-            const productsLimit = products.slice(0, limit)
-            res.status(200).json({
-               products: productsLimit
-            })
-            return products
-        }
-        const products = await productManager.getProducts()
+        const {limit = 10, page = 1, sort, ...query} = req.query
+        const products = await productManager.getProducts(limit, page, sort, query)
         res.status(200).json({message:'Products', products})
-
     } catch(error){
         res.status(500).json({error})
     }
 })
 
-router.get("/:pid", async (req, res)=>{
+router.get("/:pid", async (req, res) => {
     const {pid} = req.params
     try {
-        const productById = await productManager.getProductById(pid)
-        res.status(200).json({message:'Product', productById})
+        const product = await productManager.getProductById(pid)
+        if (!product) {
+          res.status(400).json({ message:'Invalid ID' })
+        } else {
+          res.status(200).json({ message:'Product', product })
+        }
     } catch (error){
         res.status(500).json({error})
     }
 })
 
 router.post('/', async(req,res) => {
+    // verifico que los valores que si o si deben estar esten antes
+    const {title, description, price, code} = req.body
+    if ( !title || !description || !price || !code ) {
+        return res.status(400).json({message: 'Some data is missing'})
+    }
     try {
         const newProduct = await productManager.addProduct(req.body)
         res.status(200).json({message: 'Product added', product: newProduct})
@@ -45,8 +45,12 @@ router.post('/', async(req,res) => {
 router.delete('/:pid', async(req,res) => {
     const {pid} = req.params
     try {
-        const response = await productManager.deleteProduct(pid)
-        res.status(200).json({message:'Product deleted', product: response})
+        const product = await productManager.getProductById(pid)
+        if (!product) {
+          return res.status(400).json({ message:'Invalid ID' }) 
+        }
+        const deleteProduct= await productManager.deleteProduct(pid)
+        res.status(200).json({message:'Product deleted', product: deleteProduct})
     } catch (error) {
         res.status(500).json({error})
     }
@@ -55,9 +59,15 @@ router.delete('/:pid', async(req,res) => {
 router.put('/:pid', async (req,res) => {
     const productUpdate = req.body
     const {pid} = req.params
-    productUpdate.id = pid
+    if (!productUpdate) {
+        return res.status(400).json({message: 'Please enter updates'})
+    }
     try {
-        const productUpdated = await productManager.updateProduct(productUpdate)
+        const product = await productManager.getProductById(pid)
+        if (!product) {
+          return res.status(400).json({ message:'Invalid ID' }) 
+        }
+        const productUpdated = await productManager.updateProduct(pid, productUpdate)
         req.status(200).json({message:'Product updated', product: productUpdated})
     } catch (error){
         res.status(500).json({error})

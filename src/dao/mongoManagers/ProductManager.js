@@ -1,13 +1,29 @@
 import { productsModel } from "../../db/models/products.model.js";
 
 class ProductManager {
-    async getProducts(){
-        try {
-            const products = await productsModel.find({})
-            return products
 
+    async getProducts(obj){
+        const { limit, page, sortPrice, ...query} = obj
+        try {
+            const result = await productsModel.paginate (
+                query,
+                {limit, page, sort:{price: sortPrice}}
+            )
+            const info = {
+                status: "success",
+                payload: result.docs,
+                totalPages: result.totalPages,
+                prevPage: result.prevPage,
+                nextPage: result.nextPage,
+                page: result.page,
+                hasPrevPage: result.hasPrevPage,
+                hasNextPage: result.hasNextPage,
+                prevLink: result.hasPrevPage === false ? null : `http://localhost:8080/api/products/?page=${result.prevPage}`,
+                nextLink: result.hasPrevPage === false ? null : `http://localhost:8080/api/products/?page=${result.nextPage}` 
+            }
         } catch (error) {
-            return error
+            const resultError = {status: "error"}
+            return resultError
         }
     }
     async addProduct(obj) {
@@ -26,29 +42,18 @@ class ProductManager {
             return error
         }
     }
-    async updateProduct(obj) {
+    async deleteProduct(id) {
         try {
-            const productUpdate = await productsModel.findById(obj.id)
-            const newProd = {
-                title: obj.title ? obj.title : productUpdate.title,
-                description: obj.description ? obj.description : productUpdate.description,
-                price: obj.price ? obj.price : productUpdate.price,
-                stock: obj.stock ? obj.stock : productUpdate.stock,
-                code: obj.code ? obj.code : productUpdate.code,
-                category: obj.category ? obj.category : productUpdate.category,
-                status: true,
-                thumbnails: obj.thumbnails ? obj.thumbnails : productUpdate.thumbnails || " ",
-                id: obj.id
-            }
-            return newProd
+            const deleteProduct = await productsModel.findByIdAndDelete(id)
+            return deleteProduct
         } catch (error) {
             return error
         }
     }
-    async deleteProducts(id) {
+    async updateProduct(id, obj) {
         try {
-            const deleteProduct = await productsModel.findByIdAndDelete(id)
-            return deleteProduct
+            const productUpdate = await productsModel.updateOne( { _id: id }, { ...obj } )
+            return productUpdate
         } catch (error) {
             return error
         }

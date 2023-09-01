@@ -1,6 +1,4 @@
 import { cartsModel } from "../../db/models/carts.model.js";
-import productManager from "./ProductManager.js";
-
 
 class CartManager {
 

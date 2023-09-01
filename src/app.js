@@ -1,9 +1,9 @@
 import express from 'express'
 import productsRouter from './routes/products.router.js'
 import cartRouter from './routes/cart.router.js'
-import chatRouter from './routes/chat.router.js'
+import productsViewRouter from './routes/productsView.router.js'
 import viewsRouter from './routes/views.router.js'
-import realTimeProductsRouter from './routes/realTimeProducts.router.js'
+import cartViewRouter from './routes/cartView.router.js'
 import handlebars from 'express-handlebars'
 import {__dirname} from './utils.js'
 import productManager from './dao/fileManagers/ProductManager.js'
@@ -34,8 +34,8 @@ app.use("/api/cart", cartRouter)
 
 // handlebars routes
 app.use("/api/views", viewsRouter)
-app.use("/api/realtimeproducts", realTimeProductsRouter)
-app.use("/api/chat", chatRouter)
+app.use("/cart", cartViewRouter)
+app.use("/products", productsViewRouter)
 
 const PORT = 8080
 
