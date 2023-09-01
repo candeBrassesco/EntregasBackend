@@ -8,5 +8,5 @@ prodForm.onsubmit = (e) =>{
     let product = {
         id: pid.innerHTML
     }
-    socketClient.emit("prodToCart", prod)
+    socketClient.emit("prodToCart", product)
 }

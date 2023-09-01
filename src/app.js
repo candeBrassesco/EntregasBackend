@@ -6,9 +6,9 @@ import viewsRouter from './routes/views.router.js'
 import cartViewRouter from './routes/cartView.router.js'
 import handlebars from 'express-handlebars'
 import {__dirname} from './utils.js'
-import productManager from './dao/fileManagers/ProductManager.js'
 import {Server} from "socket.io"
 import './db/dbConfig.js'
+import cartManager from './dao/mongoManagers/CartManager.js'
 
 
 const app = express()
@@ -44,42 +44,14 @@ const httpServer = app.listen(PORT, () => {
     console.log(`Escuchando al puerto ${PORT}`)
 })
 
-const products = await productManager.getProducts()
-
-let addProductsToList = [...products]
-
-const messages = []
 
 const socketServer = new Server(httpServer)
 
 socketServer.on('connection', (socket) => {
     console.log(`User connected: ${socket.id}`)
-    //realtimeproducts
-    socket.emit("products", addProductsToList)
-    socket.on("object", (obj) => {
-        productManager.addProduct(obj)
-        let addList = {title: obj.title}
-        addProductsToList.push(addList)
-        socketServer.emit("addProductToHTML", addProductsToList)
-    });
-    socket.on("id", async (id) => {
-        let product = await productManager.getProductById(id)
-        console.log(product)
-        if (product) {
-            let title = product.title
-            let newList = addProductsToList.filter(p => p.title !== title)
-            socketServer.emit("deleteProductOfHTML", newList) 
-        } 
-        productManager.deleteProduct(id)
-    })
-    //chat 
-    socket.on("message", infoMessage => {
-        messages.push(infoMessage)
-        socketServer.emit("chat", messages)
-    })
-    //emitir notificación de que se conectó un usuario a los demás
-    socket.on("newUser", user=> {
-        socket.broadcast.emit('broadcast', user)
+    socket.on("prodToCart", async product => {
+        const addProduct = await cartManager.addProductToCart("64f22b19a467bbe55c161657", product.id)
+        return addProduct
     })
     socket.on("disconnect", () => {
         console.log("Client disconnected")

@@ -2,12 +2,17 @@ import { productsModel } from "../../db/models/products.model.js";
 
 class ProductManager {
 
-    async getProducts(obj){
-        const { limit, page, sortPrice, ...query} = obj
+    async getProducts(limit, page, sort, query){
         try {
+            const options = {
+                limit: limit,
+                page: page,
+                sort: sort ? {price:sort} : {},
+                lean: true
+            }
             const result = await productsModel.paginate (
                 query,
-                {limit, page, sort:{price: sortPrice}}
+                options
             )
             const info = {
                 status: "success",
@@ -18,9 +23,10 @@ class ProductManager {
                 page: result.page,
                 hasPrevPage: result.hasPrevPage,
                 hasNextPage: result.hasNextPage,
-                prevLink: result.hasPrevPage === false ? null : `http://localhost:8080/api/products/?page=${result.prevPage}`,
-                nextLink: result.hasPrevPage === false ? null : `http://localhost:8080/api/products/?page=${result.nextPage}` 
+                prevLink: result.hasPrevPage === false ? null : `http://localhost:8080/api/products?page=${result.prevPage}`,
+                nextLink: result.hasPrevPage === false ? null : `http://localhost:8080/api/products?page=${result.nextPage}` 
             }
+            return info
         } catch (error) {
             const resultError = {status: "error"}
             return resultError
