@@ -50,7 +50,7 @@ const socketServer = new Server(httpServer)
 socketServer.on('connection', (socket) => {
     console.log(`User connected: ${socket.id}`)
     socket.on("prodToCart", async product => {
-        const addProduct = await cartManager.addProductToCart("64f22b19a467bbe55c161657", product.id)
+        const addProduct = await cartManager.addProductToCart("64f7d159ebf37104ea45bd52", product.id)
         return addProduct
     })
     socket.on("disconnect", () => {
