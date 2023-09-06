@@ -4,11 +4,12 @@ import cartRouter from './routes/cart.router.js'
 import productsViewRouter from './routes/productsView.router.js'
 import viewsRouter from './routes/views.router.js'
 import cartViewRouter from './routes/cartView.router.js'
+import cartManager from './dao/mongoManagers/CartManager.js'
 import handlebars from 'express-handlebars'
 import {__dirname} from './utils.js'
 import {Server} from "socket.io"
 import './db/dbConfig.js'
-import cartManager from './dao/mongoManagers/CartManager.js'
+
 
 
 const app = express()
@@ -50,7 +51,7 @@ const socketServer = new Server(httpServer)
 socketServer.on('connection', (socket) => {
     console.log(`User connected: ${socket.id}`)
     socket.on("prodToCart", async product => {
-        const addProduct = await cartManager.addProductToCart("64f7d159ebf37104ea45bd52", product.id)
+        const addProduct = await cartManager.addProductToCart("64f7d159ebf37104ea45bd52", product.pid)
         return addProduct
     })
     socket.on("disconnect", () => {

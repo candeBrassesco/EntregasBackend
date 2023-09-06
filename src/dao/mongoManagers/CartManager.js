@@ -1,5 +1,4 @@
 import { cartsModel } from "../../db/models/carts.model.js";
-import productManager from "./ProductManager.js";
 
 class CartManager {
 
@@ -33,6 +32,7 @@ class CartManager {
     async addProductToCart(cid, pid) {
         try {
             const cartById = await cartsModel.findById(cid)
+            console.log(cartById) //test
             
             let newProduct = {
                 pid: pid,
