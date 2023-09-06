@@ -25,7 +25,7 @@ class CartManager {
      async getCartsById(id) {
         try {
             const cartsPrev = await this.getCarts()
-            const cartById = cartsPrev.find(p => p.id === id)
+            const cartById = cartsPrev.find(p => p.id == id)
             if (!cartById) {
                 return 'Cart Id not found'
             }

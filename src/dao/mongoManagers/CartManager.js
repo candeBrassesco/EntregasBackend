@@ -1,4 +1,5 @@
 import { cartsModel } from "../../db/models/carts.model.js";
+import productManager from "./ProductManager.js";
 
 class CartManager {
 
@@ -13,7 +14,7 @@ class CartManager {
 
     async getCartsById(id) {
         try {
-            const cart = await cartsModel.findById(id)
+            const cart = await cartsModel.findById(id).populate('products')
             return cart
         } catch (error) {
             return error
@@ -30,17 +31,56 @@ class CartManager {
     }
 
     async addProductToCart(cid, pid) {
-        try { 
-            const cart = await cartsModel.findOneAndUpdate ({_id: cid}, {
-                $push: {
-                    products: {
-                        _id: pid, 
-                        // se incrementa en una unidad si el producto existe
-                        quantity: { $inc: { $cond: [ { $eq: [ { _id: pid }, { quantity: { $exists: true } } ] }, 1, 0 ] }}
+        try {
+            const cartById = await cartsModel.findById(cid)
+            
+            let newProduct = {
+                pid: pid,
+                quantity: 1,
+                }
+    
+            const prodOnCart = cartById.products.find(p=>p.pid == pid)
+            console.log(prodOnCart)
+            
+            if (!prodOnCart) {
+                let newCart = cartById
+                newCart.products.push(newProduct)
+                return await cartById.updateOne(newCart)
+            } else {
+                    prodOnCart.quantity++
+                    let newProduct = {
+                        pid: pid,
+                        quantity: prodOnCart.quantity
                     }
-                }, 
-            }, {upsert: true});
-            return cart
+                    const indexFindProdOnCart = cartById.products.indexOf(prodOnCart)
+                    cartById.products.splice(indexFindProdOnCart, 1)
+                    let newCart = cartById
+                    newCart.products.push(newProduct)
+                    return await cartById.updateOne(newCart)
+            }
+        } catch (error) {
+          console.log(error);
+          return error;
+        }
+    }
+
+    async deleteCart(id) {
+        try {
+            const cartDelete = await cartsModel.findByIdAndDelete(id)
+            return cartDelete
+        } catch (error) {
+            return error
+        }
+    }
+
+    async deleteProductOnCart(cid, pid) {
+        try {
+            const cart = await cartsModel.findById(cid)
+            if (!cart) {
+                throw new Error ('Cart not found')
+            }
+            const response = await cartsModel.updateOne({_id: cid}, {$pull:{products:{pid: pid}}})
+            return response
         } catch (error) {
             return error
         }
