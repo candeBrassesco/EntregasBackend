@@ -1,12 +1,14 @@
 const socketClient = io()
 
-const prodForm = document.getElementById("prodFrom")
+const prodForm = document.getElementById("prodForm")
 const pid = document.getElementById("pid")
 
 prodForm.onsubmit = (e) =>{
     e.preventDefault()
-    let product = {
-        id: pid.innerHTML
-    }
-    socketClient.emit("prodToCart", product)
+    setTimeout(() => {
+        const product = {
+            id: pid.innerHTML
+        }
+        socketClient.emit("prodToCart", product)
+    }, 500)
 }

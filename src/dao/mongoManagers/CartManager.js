@@ -14,6 +14,7 @@ class CartManager {
     async getCartsById(id) {
         try {
             const cart = await cartsModel.findById(id).populate('products')
+            console.log(cart) //test
             return cart
         } catch (error) {
             return error
@@ -28,42 +29,34 @@ class CartManager {
             return error
         }
     }
-
+    
     async addProductToCart(cid, pid) {
         try {
-            const cartById = await cartsModel.findById(cid)
-            console.log(cartById) //test
-            
-            let newProduct = {
-                pid: pid,
-                quantity: 1,
-                }
-    
-            const prodOnCart = cartById.products.find(p=>p.pid == pid)
-            console.log(prodOnCart) // test
-            
-            if (!prodOnCart) {
-                let newCart = cartById
-                newCart.products.push(newProduct)
-                return await cartById.updateOne(newCart)
-            } else {
-                    prodOnCart.quantity++
-                    let newProduct = {
-                        pid: pid,
-                        quantity: prodOnCart.quantity
-                    }
-                    const indexFindProdOnCart = cartById.products.indexOf(prodOnCart)
-                    cartById.products.splice(indexFindProdOnCart, 1)
-                    let newCart = cartById
-                    newCart.products.push(newProduct)
-                    return await cartById.updateOne(newCart)
-            }
+          const cartById = await cartsModel.findById(cid)
+      
+          const newProduct = {
+            pid: pid,
+            quantity: 1,
+          }
+      
+          const prodOnCart = cartById.products.find((p) => p.pid == pid)
+          console.log(prodOnCart)
+      
+          if (!prodOnCart) {
+            cartById.products.push(newProduct)
+          } else {
+            prodOnCart.quantity++
+          }
+      
+          const updatedCart = await cartById.save()
+      
+          return updatedCart
         } catch (error) {
-          console.log(error);
-          return error;
+          console.log(error)
+          return error
         }
     }
-
+  
     async deleteCart(cid) {
         try {
             const cart = await cartsModel.findById(cid)
