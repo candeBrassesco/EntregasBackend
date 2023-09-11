@@ -1,14 +1,15 @@
 const socketClient = io()
 
-const prodForm = document.getElementById("prodForm")
-const pid = document.getElementById("pid")
+const buttons = document.querySelectorAll('button[type="submit"]');
 
-prodForm.onsubmit = (e) =>{
-    e.preventDefault()
-    setTimeout(() => {
+
+buttons.forEach((button) => {
+    button.addEventListener("click", (e) =>{
+        e.preventDefault();
         const product = {
-            id: pid.innerHTML
-        }
+            id: button.id
+        };
         socketClient.emit("prodToCart", product)
-    }, 500)
-}
+    })
+})
+
